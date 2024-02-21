@@ -1,3 +1,5 @@
+import 'dart:math';
+import 'package:uuid/uuid.dart';
 import 'package:flutter/material.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 import 'package:flutter/services.dart';
@@ -101,6 +103,30 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
       String formattedDateTime = DateFormat.yMd().add_jm().format(pickedDate);
       onDateTimeSelected(formattedDateTime);
     }
+  }
+
+// Hàm tính toán duration từ thời gian hiện tại và startTime
+  int calculateDuration(DateTime startTime) {
+    DateTime currentTime = DateTime.now();
+    int differenceInMinutes = startTime.difference(currentTime).inMinutes;
+    int duration = max(0, differenceInMinutes - 1); // Đảm bảo duration không âm
+    return duration;
+  }
+
+// Hàm để tạo notification_id là một số nguyên nhỏ hơn hoặc bằng 2^31 - 1
+  int generateNotificationId() {
+    // Lấy thời gian hiện tại
+    int currentTime = DateTime.now().millisecondsSinceEpoch;
+
+    // Tạo một số ngẫu nhiên
+    Random random = Random();
+    int randomValue = random.nextInt(
+        999999); // Giả sử tạo số ngẫu nhiên trong khoảng từ 0 đến 999999
+
+    // Kết hợp thời gian và số ngẫu nhiên để tạo notification_id
+    int notificationId = (currentTime + randomValue) %
+        (pow(2, 31) - 1).toInt(); // Chuyển đổi kết quả của pow thành kiểu int
+    return notificationId;
   }
 
   @override
@@ -342,10 +368,16 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
                                     parseDateTime(startDateTime!);
                                 debugPrint(
                                     'Notification Scheduled for $startTime');
-                                NotificationService().scheduleNotification(
-                                    title: 'Scheduled Notification',
-                                    body: '$startTime',
-                                    scheduledNotificationDateTime: startTime);
+
+                                int duration = calculateDuration(startTime);
+                                int notificationId = generateNotificationId();
+                                LocalNotification.showScheduleNotification(
+                                    title: "Task Notification:  ${title.text}",
+                                    body:
+                                        "The task will be stared after 10 minutes",
+                                    payload: title.text,
+                                    duration: duration,
+                                    notification_id: notificationId);
                               },
                               child: Padding(
                                 padding: const EdgeInsets.all(15),

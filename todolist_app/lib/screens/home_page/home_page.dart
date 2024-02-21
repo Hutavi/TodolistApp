@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todolist_app/blocs/tasks/tasks_bloc.dart';
 import 'package:todolist_app/constants/colors.dart';
 import 'package:todolist_app/constants/font.dart';
+import 'package:todolist_app/local_notification.dart';
 import 'package:todolist_app/screens/task_page/new_task_screen.dart';
 import 'package:todolist_app/utils/util.dart';
 import 'package:todolist_app/widgets/build_text_field.dart';
@@ -344,6 +345,12 @@ class _HomePageState extends State<HomePage> {
                   MaterialPageRoute(
                       builder: (context) => const NewTaskScreen()),
                 );
+                // LocalNotification.showScheduleNotification(
+                //     title: "Schedule",
+                //     body: "body",
+                //     payload: "payload",
+                //     duration: 0,
+                //     notification_id: 1);
               }),
         ),
       ),
